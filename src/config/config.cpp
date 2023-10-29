@@ -4,6 +4,47 @@ namespace config {
     #define IF(t)               if (vb_ptr->type == typeid(t)) 
     #define CAST_TYPE(t)        config::value<t>* v_ptr = (config::value<t>*)vb_ptr
     
+
+    void saveToNode(yaml::Node& node, std::vector<config::value_base*> values) {
+        for (config::value_base* vb_ptr : values) {                
+            #define ASSIGN_TO_STR()     node[v_ptr->alias] = std::to_string(*v_ptr->ptr) 
+            #define ASSIGN_DEFAULT(t)   IF(t) { \
+                                            CAST_TYPE(t); \
+                                            ASSIGN_TO_STR(); \
+                                        }
+
+            ASSIGN_DEFAULT(int); 
+            ASSIGN_DEFAULT(short); 
+            ASSIGN_DEFAULT(double);
+            ASSIGN_DEFAULT(float); 
+            ASSIGN_DEFAULT(long); 
+            ASSIGN_DEFAULT(long long); 
+
+            ASSIGN_DEFAULT(bool);
+            
+            ASSIGN_DEFAULT(char); 
+            IF(char*) { CAST_TYPE(char*); 
+                node[v_ptr->alias] = *v_ptr->ptr; 
+            } 
+            IF(std::string) { CAST_TYPE(std::string); 
+                node[v_ptr->alias] = *v_ptr->ptr; 
+            }
+            
+            IF(void*) {
+                CAST_TYPE(void*);
+                node[v_ptr->alias] = "0x" + std::to_string((long long)*v_ptr->ptr);
+            } 
+
+
+
+            /**    ADD OTHER TYPES HERE   **/
+
+
+            #undef ASSIGN_TO_STR
+            #undef ASSIGN_DEFAULT
+        }
+    }
+
     
     result Config::init(std::string config_file, std::vector<config::value_base*> d) {
         this->values = d;
@@ -14,34 +55,12 @@ namespace config {
             
             std::ofstream cf(this->file);
             if (cf.is_open()) {
-                for (config::value_base* vb_ptr : this->values) {                
-                    #define WRITE(t)    IF(t) { \
-                                            CAST_TYPE(t); \
-                                            cf << v_ptr->alias << ": " << *v_ptr->ptr << "\n"; \
-                                        }
-            
-                    WRITE(int); 
-                    WRITE(short); 
-                    WRITE(double);
-                    WRITE(float); 
-                    WRITE(long); 
-                    WRITE(long long); 
+                yaml::Node n;
+                saveToNode(n, this->values);
 
-                    WRITE(bool);
-                    
-                    WRITE(char); 
-                    WRITE(char*); 
-                    WRITE(std::string); 
-
-                    WRITE(void*); 
-
-
-                    /**    ADD OTHER TYPES HERE   **/
-
-
-                }
-                
-                cf << std::endl;
+                std::string str;
+                yaml::Serialize(n, str);
+                cf << str << std::endl;
                 cf.close();
             } else {
                 err("std::ofstream failed to open file");
@@ -76,7 +95,7 @@ namespace config {
             ASSIGN_DEFAULT(bool);
             
             ASSIGN_DEFAULT(char); 
-            ASSIGN_DEFAULT(char*);
+            // ASSIGN_DEFAULT(char*);
             ASSIGN_DEFAULT(std::string);
 
             ASSIGN_DEFAULT(void*);
@@ -108,44 +127,7 @@ namespace config {
     }
 
     result Config::save() {
-        for (config::value_base* vb_ptr : this->values) {                
-            #define ASSIGN_TO_STR()     this->node[v_ptr->alias] = std::to_string(*v_ptr->ptr) 
-            #define ASSIGN_DEFAULT(t)   IF(t) { \
-                                            CAST_TYPE(t); \
-                                            ASSIGN_TO_STR(); \
-                                        }
-
-            ASSIGN_DEFAULT(int); 
-            ASSIGN_DEFAULT(short); 
-            ASSIGN_DEFAULT(double);
-            ASSIGN_DEFAULT(float); 
-            ASSIGN_DEFAULT(long); 
-            ASSIGN_DEFAULT(long long); 
-
-            ASSIGN_DEFAULT(bool);
-            
-            ASSIGN_DEFAULT(char); 
-            IF(char*) { CAST_TYPE(char*); 
-                this->node[v_ptr->alias] = *v_ptr->ptr; 
-            } 
-            IF(std::string) { CAST_TYPE(std::string); 
-                this->node[v_ptr->alias] = *v_ptr->ptr; 
-            }
-            
-            IF(void*) {
-                CAST_TYPE(void*);
-                this->node[v_ptr->alias] = "0x" + std::to_string((long long)*v_ptr->ptr);
-            } 
-
-
-
-            /**    ADD OTHER TYPES HERE   **/
-
-
-            #undef ASSIGN_TO_STR
-            #undef ASSIGN_DEFAULT
-        }
-
+        saveToNode(this->node, this->values);
 
         std::string str;
         yaml::Serialize(this->node, str);
