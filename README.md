@@ -3,5 +3,5 @@ A config system using yaml ([mini_yaml](https://github.com/jimmiebergmann/mini-y
 
 
 # How to use
-Copy [include/mini_yaml/](include/mini_yaml/) and [src/config/](src/config/) folder into your project  
+Copy [include/mini_yaml/](include/mini_yaml/), [src/config/](src/config/) and [common.h](src/common.h) folder into your project  
 
