@@ -34,6 +34,11 @@ namespace config {
                     WRITE(std::string); 
 
                     WRITE(void*); 
+
+
+                    /**    ADD OTHER TYPES HERE   **/
+
+
                 }
                 
                 cf << std::endl;
@@ -75,6 +80,11 @@ namespace config {
             ASSIGN_DEFAULT(std::string);
 
             ASSIGN_DEFAULT(void*);
+
+
+            /**   ADD OTHER TYPES HERE   **/
+
+
 
             #undef ASSIGN_TO_STR
             #undef ASSIGN_DEFAULT
@@ -126,6 +136,11 @@ namespace config {
                 CAST_TYPE(void*);
                 this->node[v_ptr->alias] = "0x" + std::to_string((long long)*v_ptr->ptr);
             } 
+
+
+
+            /**    ADD OTHER TYPES HERE   **/
+
 
             #undef ASSIGN_TO_STR
             #undef ASSIGN_DEFAULT
