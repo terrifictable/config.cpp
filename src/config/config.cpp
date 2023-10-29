@@ -5,7 +5,7 @@ namespace config {
     #define CAST_TYPE(t)        config::value<t>* v_ptr = (config::value<t>*)vb_ptr
     
 
-    void saveToNode(yaml::Node& node, std::vector<config::value_base*> values) {
+    void save_to_node(yaml::Node& node, std::vector<config::value_base*> values) {
         for (config::value_base* vb_ptr : values) {                
             #define ASSIGN_TO_STR()     node[v_ptr->alias] = std::to_string(*v_ptr->ptr) 
             #define ASSIGN_DEFAULT(t)   IF(t) { \
@@ -56,7 +56,7 @@ namespace config {
             std::ofstream cf(this->file);
             if (cf.is_open()) {
                 yaml::Node n;
-                saveToNode(n, this->values);
+                save_to_node(n, this->values);
 
                 std::string str;
                 yaml::Serialize(n, str);
@@ -127,7 +127,7 @@ namespace config {
     }
 
     result Config::save() {
-        saveToNode(this->node, this->values);
+        save_to_node(this->node, this->values);
 
         std::string str;
         yaml::Serialize(this->node, str);
