@@ -26,19 +26,19 @@ namespace config {
     #define RESULT_OK result{.status = ok, .msg = ""}
     #define RESULT(stat, message) result{.status = stat, .msg = message}
 
-    // TODO: Make this (at least somewhat) work... this is very much retarded and doesnt work with std::vector because the people who made std::vector themselves were very very special and retarded
+
     struct value_base {
         std::string alias;
         const std::type_info& type;
 
         value_base(std::string a, const std::type_info& t) : alias(a), type(t) {}
     };
+
     template<typename T>
     struct value : value_base {
-        // T default_val;
         T* ptr;
 
-        value(std::string a, /*T def,*/ T* p) : value_base(a, typeid(T)), ptr(p) {}
+        value(std::string a, T* p) : value_base(a, typeid(T)), ptr(p) {}
     };
 
 
