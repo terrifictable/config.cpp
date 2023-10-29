@@ -20,9 +20,20 @@ namespace config {
                                             cf << v_ptr->alias << ": " << *v_ptr->ptr << "\n"; \
                                         }
             
-                    WRITE(int);
+                    WRITE(int); 
+                    WRITE(short); 
                     WRITE(double);
-                    WRITE(std::string)
+                    WRITE(float); 
+                    WRITE(long); 
+                    WRITE(long long); 
+
+                    WRITE(bool);
+                    
+                    WRITE(char); 
+                    WRITE(char*); 
+                    WRITE(std::string); 
+
+                    WRITE(void*); 
                 }
                 
                 cf << std::endl;
@@ -50,10 +61,20 @@ namespace config {
                                             CAST_TYPE(t); \
                                             ASSIGN_TYPE(t); \
                                         }
-
             ASSIGN_DEFAULT(int); 
+            ASSIGN_DEFAULT(short); 
             ASSIGN_DEFAULT(double);
+            ASSIGN_DEFAULT(float); 
+            ASSIGN_DEFAULT(long); 
+            ASSIGN_DEFAULT(long long); 
+
+            ASSIGN_DEFAULT(bool);
+            
+            ASSIGN_DEFAULT(char); 
+            ASSIGN_DEFAULT(char*);
             ASSIGN_DEFAULT(std::string);
+
+            ASSIGN_DEFAULT(void*);
 
             #undef ASSIGN_TO_STR
             #undef ASSIGN_DEFAULT
@@ -85,11 +106,26 @@ namespace config {
                                         }
 
             ASSIGN_DEFAULT(int); 
+            ASSIGN_DEFAULT(short); 
             ASSIGN_DEFAULT(double);
-            IF(std::string) {
-                CAST_TYPE(std::string);
-                this->node[v_ptr->alias] = *v_ptr->ptr;
+            ASSIGN_DEFAULT(float); 
+            ASSIGN_DEFAULT(long); 
+            ASSIGN_DEFAULT(long long); 
+
+            ASSIGN_DEFAULT(bool);
+            
+            ASSIGN_DEFAULT(char); 
+            IF(char*) { CAST_TYPE(char*); 
+                this->node[v_ptr->alias] = *v_ptr->ptr; 
+            } 
+            IF(std::string) { CAST_TYPE(std::string); 
+                this->node[v_ptr->alias] = *v_ptr->ptr; 
             }
+            
+            IF(void*) {
+                CAST_TYPE(void*);
+                this->node[v_ptr->alias] = "0x" + std::to_string((long long)*v_ptr->ptr);
+            } 
 
             #undef ASSIGN_TO_STR
             #undef ASSIGN_DEFAULT
