@@ -30,9 +30,10 @@ namespace config {
                 node[v_ptr->alias] = *v_ptr->ptr; 
             }
             
-            IF(void*) {
-                CAST_TYPE(void*);
-                node[v_ptr->alias] = "0x" + std::to_string((long long)*v_ptr->ptr);
+            IF(void*) { CAST_TYPE(void*);
+                std::stringstream sst;
+                sst << std::hex << *v_ptr->ptr;
+                node[v_ptr->alias] = sst.str();
             } 
 
 
@@ -81,10 +82,8 @@ namespace config {
 
         for (config::value_base* vb_ptr : this->values) {                
             #define ASSIGN_TYPE(t)      *v_ptr->ptr = this->node[v_ptr->alias].As<t>()
-            #define ASSIGN_DEFAULT(t)   IF(t) { \
-                                            CAST_TYPE(t); \
-                                            ASSIGN_TYPE(t); \
-                                        }
+            #define ASSIGN_DEFAULT(t)   IF(t) { CAST_TYPE(t); ASSIGN_TYPE(t); }
+
             ASSIGN_DEFAULT(int); 
             ASSIGN_DEFAULT(short); 
             ASSIGN_DEFAULT(double);
@@ -95,7 +94,9 @@ namespace config {
             ASSIGN_DEFAULT(bool);
             
             ASSIGN_DEFAULT(char); 
-            // ASSIGN_DEFAULT(char*);
+            IF(char*) { CAST_TYPE(char*);
+                *v_ptr->ptr = const_cast<char*>(this->node[v_ptr->alias].As<std::string>().c_str());
+            }
             ASSIGN_DEFAULT(std::string);
 
             ASSIGN_DEFAULT(void*);
