@@ -47,7 +47,7 @@ namespace config {
     private:
         std::string file;
         yaml::Node node;
-        std::vector<config::value_base*> defaults;
+        std::vector<config::value_base*> values;
 
         result load();
         result clear();

@@ -6,7 +6,7 @@ namespace config {
     
     
     result Config::init(std::string config_file, std::vector<config::value_base*> d) {
-        this->defaults = d;
+        this->values = d;
 
         this->file = fs::absolute(config_file).string();
         if (!fs::exists(file)) {
@@ -14,7 +14,7 @@ namespace config {
             
             std::ofstream cf(this->file);
             if (cf.is_open()) {
-                for (config::value_base* vb_ptr : this->defaults) {                
+                for (config::value_base* vb_ptr : this->values) {                
                     #define WRITE(t)    IF(t) { \
                                             CAST_TYPE(t); \
                                             cf << v_ptr->alias << ": " << *v_ptr->ptr << "\n"; \
@@ -44,7 +44,7 @@ namespace config {
             return RESULT(parse_error, e.what());
         }
 
-        for (config::value_base* vb_ptr : this->defaults) {                
+        for (config::value_base* vb_ptr : this->values) {                
             #define ASSIGN_TYPE(t)      *v_ptr->ptr = this->node[v_ptr->alias].As<t>()
             #define ASSIGN_DEFAULT(t)   IF(t) { \
                                             CAST_TYPE(t); \
@@ -77,7 +77,7 @@ namespace config {
     }
 
     result Config::save() {
-        for (config::value_base* vb_ptr : this->defaults) {                
+        for (config::value_base* vb_ptr : this->values) {                
             #define ASSIGN_TO_STR()     this->node[v_ptr->alias] = std::to_string(*v_ptr->ptr) 
             #define ASSIGN_DEFAULT(t)   IF(t) { \
                                             CAST_TYPE(t); \
