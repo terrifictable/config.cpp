@@ -1,14 +1,14 @@
 #include "config.h"
 
 namespace config {
-    #define IF(t)               if (vb_ptr->type == typeid(t)) 
+    #define $(t)                (vb_ptr->type == typeid(t)) 
     #define CAST_TYPE(t)        config::value<t>* v_ptr = (config::value<t>*)vb_ptr
     
 
     void save_to_node(yaml::Node& node, std::vector<config::value_base*> values) {
         for (config::value_base* vb_ptr : values) {                
             #define ASSIGN_TO_STR()     node[v_ptr->alias] = std::to_string(*v_ptr->ptr) 
-            #define ASSIGN_DEFAULT(t)   IF(t) { \
+            #define ASSIGN_DEFAULT(t)   if $(t) { \
                                             CAST_TYPE(t); \
                                             ASSIGN_TO_STR(); \
                                         }
@@ -23,14 +23,11 @@ namespace config {
             ASSIGN_DEFAULT(bool);
             
             ASSIGN_DEFAULT(char); 
-            IF(char*) { CAST_TYPE(char*); 
+            if ($(char*) || $(std::string)) { CAST_TYPE(char*); 
                 node[v_ptr->alias] = *v_ptr->ptr; 
             } 
-            IF(std::string) { CAST_TYPE(std::string); 
-                node[v_ptr->alias] = *v_ptr->ptr; 
-            }
             
-            IF(void*) { CAST_TYPE(void*);
+            if ($(void*)) { CAST_TYPE(void*);
                 std::stringstream sst;
                 sst << std::hex << *v_ptr->ptr;
                 node[v_ptr->alias] = sst.str();
@@ -82,7 +79,7 @@ namespace config {
 
         for (config::value_base* vb_ptr : this->values) {                
             #define ASSIGN_TYPE(t)      *v_ptr->ptr = this->node[v_ptr->alias].As<t>()
-            #define ASSIGN_DEFAULT(t)   IF(t) { CAST_TYPE(t); ASSIGN_TYPE(t); }
+            #define ASSIGN_DEFAULT(t)   if $(t) { CAST_TYPE(t); ASSIGN_TYPE(t); }
 
             ASSIGN_DEFAULT(int); 
             ASSIGN_DEFAULT(short); 
@@ -94,7 +91,7 @@ namespace config {
             ASSIGN_DEFAULT(bool);
             
             ASSIGN_DEFAULT(char); 
-            IF(char*) { CAST_TYPE(char*);
+            if ($(char*)) { CAST_TYPE(char*);
                 *v_ptr->ptr = const_cast<char*>(this->node[v_ptr->alias].As<std::string>().c_str());
             }
             ASSIGN_DEFAULT(std::string);
@@ -140,6 +137,6 @@ namespace config {
         return RESULT_OK;
     }
     
-    #undef IF
+    #undef $
     #undef CAST_TYPE
 };
