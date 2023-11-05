@@ -46,13 +46,15 @@ namespace config {
     class Config {
     private:
         std::string file;
-        yaml::Node node;
         std::vector<config::value_base*> values;
 
         result load();
         result clear();
 
     public:
+        yaml::Node node;
+
+
         Config() {}
         ~Config() {}
 
