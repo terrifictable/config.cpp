@@ -1,9 +1,6 @@
 CC := g++
 INCLUDE := -Iinclude/ -Isrc/
-FLAGS := -std=c++17 -g -Wall -Wextra -Werror $(INCLUDE)
-
-LD      := ld
-LDFLAGS :=
+FLAGS := -std=c++17 -static -Wall -Wextra -Werror $(INCLUDE)
 
 srcdir := src
 src    := $(wildcard $(srcdir)/*.cpp) $(wildcard $(srcdir)/*/*.cpp $(srcdir)/*/*/*.cpp) $(wildcard $(srcdir)/*/*.c)
